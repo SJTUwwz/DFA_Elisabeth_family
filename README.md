@@ -1,4 +1,4 @@
-## This project is the source code of paper 《Shortcut2Secrets: A Path-based Differential Fault Attack》
+## source code of paper 《Shortcut2Secrets: A Path-based Differential Fault Attack》
 
 ### A complete DFA will include two files: xx_encryption.py and xx_filtering_key.py. xx is the concrete cipher.
 
