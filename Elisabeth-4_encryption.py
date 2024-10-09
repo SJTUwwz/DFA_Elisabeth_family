@@ -146,7 +146,6 @@ if __name__ == "__main__":
     #     es_k = copy.deepcopy(test_key)
     #     fault_es_k = copy.deepcopy(test_key)
     #     fault_pos = random.randint(0, 255)
-    #     # For other bit fault, the process is the same. The only difference is the number of \delta h table
     #     fault_es_k[fault_pos] = (fault_es_k[fault_pos] + 8) & 15
     #     es_perm = [i for i in range(256)]
     #     es_w_vec = [0 for i in range(256)]
@@ -172,15 +171,17 @@ if __name__ == "__main__":
     #         es_z = es_z & 15
     #         fault_es_z = fault_es_z & 15
     #         count += 1
-    #         # print(count, len(candidate_pos))
-    #         if es_z != fault_es_z:
+    #         if es_z != fault_es_z:   # Lemma 1 case
     #             candidate_pos = candidate_pos.intersection(set(es_perm[:60]))
+    #         else:
+    #             for j in range(12):  # Lemma 2 case
+    #                 if es_perm[5 * j + 4] in candidate_pos:
+    #                     candidate_pos.remove(es_perm[5 * j + 4])
     #     times_count += count
     # t2 = time.time()
     # print("Total time:", t2-t1)
     # # print("Averaged time:", (t1-t2)/n)
     # print("Averaged count:", times_count/n)
-        # print(candidate_pos, fault_pos, count)
 
     # generate normal and faulted keystream
     normal_key_stream = []
@@ -225,7 +226,7 @@ if __name__ == "__main__":
     # Multiple initial point greedy algorithm
     closest_pairs = []
     cor_dis = 4
-    for i in range(len(useful_pairs)):
+    for i in range(len(useful_pairs)):  # genenrate the initial point pool
         for j in range(i + 1, len(useful_pairs)):
             new_dis = 4 - len(useful_pairs[i][1].intersection(useful_pairs[j][1]))
             if new_dis < cor_dis:
@@ -236,10 +237,10 @@ if __name__ == "__main__":
 
     print(len(closest_pairs), cor_dis)
     # print(closest_pairs[:20])
-    len_try = min((200, len(closest_pairs)))
+    len_try = min((200, len(closest_pairs))) # the attacker and control the upper bound of the size of pool
     # cor_dis = 1
     print("1ST Time used:", time.time() - tt1)
-
+    tt = time.time()
     # target_pair: [estimated_size of max set, beginning pair, first time that zero-dis appears]
     # we will choose the pair with smallest target_pair[0] at first
     # for the case where two pairs have the same target_pair[0], we want a smaller target_pair[2]
@@ -287,7 +288,7 @@ if __name__ == "__main__":
         print(len(tmp_set), maximum_size)
         if (maximum_size < target_pair[0]) or (maximum_size == target_pair[0] and first_zero_count < target_pair[2]):
             target_pair = [maximum_size, closest_pair, first_zero_count]
-        print("Time used:", time.time()-tt2)
+        # print("Time used:", time.time()-tt2)
         # print(len(more_than_one_pos), more_than_one_pos)
         if len(tmp_useful_pairs) > 1:
             for tmp in tmp_useful_pairs[1:]:
@@ -299,3 +300,4 @@ if __name__ == "__main__":
             f.write(str(merge_path[i])+" "+str(add_length[i])+"\n")
         f.close()
     print(target_pair)
+    print(time.time()-tt)
